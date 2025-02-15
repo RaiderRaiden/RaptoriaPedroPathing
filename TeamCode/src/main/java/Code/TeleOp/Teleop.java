@@ -69,18 +69,11 @@ public class Teleop extends OpMode {
 
         //Controls the wheels.
         //A limiter was placed on it to make the robot more controlable.
-        if (!isFreed) {
-            BL.setPower((gamepad1.left_stick_y - (gamepad1.right_stick_x/1.2) + (gamepad1.left_stick_x))/2.75);
-            FL.setPower((gamepad1.left_stick_y - (gamepad1.right_stick_x/1.2) - (gamepad1.left_stick_x))/2.75);
-            FR.setPower((gamepad1.left_stick_y + (gamepad1.right_stick_x/1.2) + (gamepad1.left_stick_x))/2.75);
-            BR.setPower((gamepad1.left_stick_y + (gamepad1.right_stick_x/1.2) - (gamepad1.left_stick_x))/2.75);
-        }
-        else {
-            BL.setPower((gamepad1.left_stick_y - (gamepad1.right_stick_x/2) + (gamepad1.left_stick_x)));
-            FL.setPower((gamepad1.left_stick_y - (gamepad1.right_stick_x/2) - (gamepad1.left_stick_x)));
-            FR.setPower((gamepad1.left_stick_y + (gamepad1.right_stick_x/2) + (gamepad1.left_stick_x)));
-            BR.setPower((gamepad1.left_stick_y + (gamepad1.right_stick_x/2) - (gamepad1.left_stick_x)));
-        }
+        BL.setPower((gamepad1.left_stick_y - (gamepad1.right_stick_x/1.2) + (gamepad1.left_stick_x))/2.75);
+        FL.setPower((gamepad1.left_stick_y - (gamepad1.right_stick_x/1.2) - (gamepad1.left_stick_x))/2.75);
+        FR.setPower((gamepad1.left_stick_y + (gamepad1.right_stick_x/1.2) + (gamepad1.left_stick_x))/2.75);
+        BR.setPower((gamepad1.left_stick_y + (gamepad1.right_stick_x/1.2) - (gamepad1.left_stick_x))/2.75);
+
 
 
         //Allows the player to lift the arm by pressing either the 'x' button or the left bumper
@@ -128,25 +121,19 @@ public class Teleop extends OpMode {
         CS2.setPower((gamepad1.right_trigger-gamepad1.left_trigger));
 
 
-        if (gamepad1.dpad_right && !fine) {
+        if ((gamepad1.dpad_down || gamepad1.x) && !fine) {
             fine = true;
         }
-        if (gamepad1.dpad_right && fine)
+        if ((gamepad1.dpad_down || gamepad1.x) && fine)
             fine = false;
 
         if (fine) {
-            LA.setPower(-0.2);
-            RA.setPower(-0.2);
+            LA.setPower(-0.3);
+            RA.setPower(-0.3);
         }
 
-        if (gamepad1.dpad_down && !isFreed) {
-            isFreed = true;
-        }
-        else if (gamepad1.dpad_down && isFreed) {
-            isFreed = false;
-        }
 
-        telemetry.addData("isFreed: ", isFreed);
+        telemetry.addData("fine: ", fine);
     }
 
 }

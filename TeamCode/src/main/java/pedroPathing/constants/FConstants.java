@@ -22,17 +22,19 @@ public class FConstants {
 
         FollowerConstants.mass = 7.371;
 
-        FollowerConstants.xMovement = 63.4;
-        FollowerConstants.yMovement = 55;
+        FollowerConstants.xMovement = 55.0;
+        FollowerConstants.yMovement = 47.0;
 
-        FollowerConstants.forwardZeroPowerAcceleration = -36.8326649;
+        FollowerConstants.maxPower= 0.3;
+
+        FollowerConstants.forwardZeroPowerAcceleration = -42.66410732;
         FollowerConstants.lateralZeroPowerAcceleration = -53.00679067;
 
         FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.29,0,0.078,0);
         FollowerConstants.useSecondaryTranslationalPID = false;
         FollowerConstants.secondaryTranslationalPIDFCoefficients.setCoefficients(0.1,0,0.01,0); // Not being used, @see useSecondaryTranslationalPID
 
-        FollowerConstants.headingPIDFCoefficients.setCoefficients(0.3225,0,.065,0);
+        FollowerConstants.headingPIDFCoefficients.setCoefficients(0.78,0,.02,0);
         FollowerConstants.useSecondaryHeadingPID = false;
         FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(2,0,0.1,0); // Not being used, @see useSecondaryHeadingPID
 

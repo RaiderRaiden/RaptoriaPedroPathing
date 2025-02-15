@@ -22,7 +22,7 @@ import pedroPathing.constants.LConstants;
 @Autonomous(name = "AroundAndAround")
 public class AutoTest extends LinearOpMode {
 
-    private Pose startPosition= new Pose(7.27, 64.75, Math.toRadians(0));
+    private Pose startPosition= new Pose(7.5, 72.000, Math.toRadians(0));
     private int pathState, track;
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -37,12 +37,13 @@ public class AutoTest extends LinearOpMode {
         switch (pathState) {
             case 0:
                 //Align with middle of chamber
-                follower.followPath(SpecPath.line1);
+                follower.followPath(SpecPath.line1, true);
                 setPathState(1);
                 break;
             case 1:
                 //Raises Arm before approaching chamber
                 if(!follower.isBusy()) {
+
                     dArm(550, 0.9);
                     setPathState(2);
                 }
@@ -53,14 +54,15 @@ public class AutoTest extends LinearOpMode {
 
                     follower.followPath(SpecPath.line2);
                     setPathState(3);
-
                 }
                 break;
             case 3:
                 //Score pre-load
                 if (!follower.isBusy()) {
-                    dArm(-145, 0.9);
-                    claw(-1, 100, 0);
+
+                    dArm(-185, 0.9);
+                    //claw(1, 100, 0);
+                    setPathState(-1);
                 }
                 break;
 
@@ -72,7 +74,6 @@ public class AutoTest extends LinearOpMode {
         pathState = pState;
         pathTimer.resetTimer();
         follower.update();
-        autonomousPathUpdate();
     }
 
 
@@ -107,6 +108,8 @@ public class AutoTest extends LinearOpMode {
             telemetry.addData("y", follower.getPose().getY());
             telemetry.addData("heading", follower.getPose().getHeading());
             telemetry.update();
+            follower.update();
+            autonomousPathUpdate();
         }
 
 
@@ -117,8 +120,10 @@ public class AutoTest extends LinearOpMode {
 
     private void dArm(int Tar, double speed) {
         //Modifies the goal position
-        ArmPos += Tar;
+        ArmPos  = Tar;
 
+        RA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //updates the new goal position
         LA.setTargetPosition(ArmPos);
         RA.setTargetPosition(ArmPos);
@@ -132,9 +137,12 @@ public class AutoTest extends LinearOpMode {
         RA.setPower(speed);
 
         //Tells the program to idle as to prevent the confusion of operations.
-        while(RA.isBusy() && LA.isBusy()) {
+       while(opModeIsActive() && RA.isBusy() && LA.isBusy()) {
+            idle();
+       }
+        LA.setPower(0);
+        RA.setPower(0);
 
-        }
     }
     private void claw(double speed, int time, double eSpeed) {
         if (speed > 0) {
