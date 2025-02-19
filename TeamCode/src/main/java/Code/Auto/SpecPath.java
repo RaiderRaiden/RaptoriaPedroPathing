@@ -135,69 +135,36 @@ public class SpecPath extends LinearOpMode {
     /***Build all paths used***/
     public void buildpath() {
 
-        /***GET READY TO RUMBLE!!***/
-        start1 = new Path(new BezierLine(new Point(8.000, 100.000, Point.CARTESIAN),
-                new Point(20.000, 123.000, Point.CARTESIAN)
-        )
-        )
-                .setTangentHeadingInterpolation();
+        /***Align to sub***/
+        forward1 = new Path(new BezierLine(new Point(startPose), new Point(24.275, 72.589, Point.CARTESIAN)));
+        forward1.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0));
 
-        /***SCORE THAT SAMPLE IN THAT LOW BUCKET LETS GOO LETS FUCKING GO!!***/
-        scoreSAM = new Path(new BezierLine(new Point(20.000, 123.000, Point.CARTESIAN),
-                new Point(18.000, 125.000, Point.CARTESIAN)
-        )
-        )
-                .setTangentHeadingInterpolation();
+        /***Goes to submersible and score preLoad***/
+        scorePreLoad = new Path(new BezierLine(new Point(23.975, 72.589, Point.CARTESIAN), new Point(39.500, 72.589, Point.CARTESIAN)));
+        scorePreLoad.setConstantHeadingInterpolation(Math.toRadians(0));
 
-        /***OKAY OKAY NOW GET OUT OF THERE AND START GETTING READY TO PUSH!!***/
-        prepare1 = new Path(new BezierLine(new Point(18.000, 125.000, Point.CARTESIAN),
-                new Point(30.000, 110.000, Point.CARTESIAN)
-        )
-        )
-                .setTangentHeadingInterpolation();
+        /***Back away from the sub!***/
+        backup1 = new Path(new BezierLine(new Point(39.500, 72.589, Point.CARTESIAN),new Point(24.275, 72.000, Point.CARTESIAN)));
+        backup1.setConstantHeadingInterpolation(Math.toRadians(0));
 
-        /***GET READY TO START PUSHING WHILE TURNING AROUND!!***/
-        prepare2 = new Path(new BezierLine(new Point(30.000, 110.000, Point.CARTESIAN),
-                new Point(60.000, 110.000, Point.CARTESIAN)
-        )
-        )
-                .setConstantHeadingInterpolation(Math.toRadians(180));
+        /***Goes to Observation Zone while turning around***/
+        goToSub = new Path(new BezierLine(new Point(24.275, 72.000, Point.CARTESIAN), new Point(24.275, 15.000, Point.CARTESIAN)));
+        goToSub.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180));
 
-        /***GET BEHIND THAT BRICK!!***/
-        prepare3 = new Path(new BezierLine(new Point(60.000, 110.000, Point.CARTESIAN),
-                new Point(60.000, 122.000, Point.CARTESIAN)
-        )
-        )
-                .setConstantHeadingInterpolation(Math.toRadians(180));
+        /***Drive to wall, to pick up specimen***/
+        pickUpHuman = new Path(new BezierLine(new Point(24.275, 15.000, Point.CARTESIAN), new Point(12.005, 15.000, Point.CARTESIAN)));
+        pickUpHuman.setConstantHeadingInterpolation(Math.toRadians(180));
         pickUpHuman.setZeroPowerAccelerationMultiplier(2.0);
 
-        /***AND PUSH!!!***/
-        push1 = new Path(new BezierLine(new Point(60.000, 122.000, Point.CARTESIAN),
-                new Point(5.000, 122.000, Point.CARTESIAN)
-        )
-        )
-                .setTangentHeadingInterpolation();
+        /***Go to sub after securing second specimen***/
+        scoreHuman = new Path(new BezierLine(new Point(12.005, 15.000, Point.CARTESIAN), new Point(39.5, 70, Point.CARTESIAN)));
+        scoreHuman.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0));
 
-        /***GET READY TO PUSH THAT 2nd BRICK!***/
-        round2 = new Point(5.000, 122.000, Point.CARTESIAN),
-                new Point(60.000, 122.000, Point.CARTESIAN)
-      )
-    )
-    .setConstantHeadingInterpolation(Math.toRadians(180));
+        /***Park in observation zone***/
+        park = new Path(new BezierLine(new Point(39.5, 70, Point.CARTESIAN), new Point(12.145, 15.000, Point.CARTESIAN)));
+        park.setConstantHeadingInterpolation(Math.toRadians(0));
 
-        /*** LETS GO JANKY!! GET BEHIND THAT BRICK!!  ***/
-        prepare4 = new Path(new BezierLine(new Point(60.000, 122.000, Point.CARTESIAN),
-                new Point(60.000, 132.000, Point.CARTESIAN)
-      )
-    )
-    .setConstantHeadingInterpolation(Math.toRadians(180));
 
-        /***AND PUSH!!***/
-        endPush = new Path(new BezierLine(new Point(60.000, 132.000, Point.CARTESIAN),
-                new Point(10.000, 132.000, Point.CARTESIAN)
-        )
-        )
-                .setTangentHeadingInterpolation();
     }
 
     /***Align to sub and raise arm***/
@@ -205,7 +172,7 @@ public class SpecPath extends LinearOpMode {
         switch (pathState) {
             case 0:
                 //Line to sub
-                follower.followPath(start1, true);
+                follower.followPath(forward1, true);
                 setPathState(1);
                 break;
             case 1:
