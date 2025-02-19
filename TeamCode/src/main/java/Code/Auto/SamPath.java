@@ -43,7 +43,7 @@ public class SamPath extends LinearOpMode {
     private final Pose startPose = new Pose(8, 100, Math.toRadians(0));
 
     //First Path
-    private Path start1, scoreSAM, prepare1, prepare2, prepare3, prepare4,push1,round2;
+    private Path start1, scoreSAM, prepare1, prepare2, prepare3, prepare4,push1,round2,endPush;
     private Path scorePreLoad;
 
     //Second path
@@ -136,68 +136,56 @@ public class SamPath extends LinearOpMode {
     public void buildpath() {
 
         /***GET READY TO RUMBLE!!***/
-        start1 = new Path(new BezierLine(new Point(8.000, 100.000, Point.CARTESIAN),
-                new Point(20.000, 123.000, Point.CARTESIAN)
-        )
-        )
-                .setTangentHeadingInterpolation();
+        start1 = new Path(new BezierLine(new Point(8.000, 100.000, Point.CARTESIAN), new Point(20.000, 123.000, Point.CARTESIAN)));
+        start1.setTangentHeadingInterpolation();
+
 
         /***SCORE THAT SAMPLE IN THAT LOW BUCKET LETS GOO LETS FUCKING GO!!***/
-        scoreSAM = new Path(new BezierLine(new Point(20.000, 123.000, Point.CARTESIAN),
-                new Point(18.000, 125.000, Point.CARTESIAN)
-        )
-        )
-                .setTangentHeadingInterpolation();
+        scoreSAM = new Path(new BezierLine(new Point(20.000, 123.000, Point.CARTESIAN), new Point(18.000, 125.000, Point.CARTESIAN)));
+        scoreSAM.setTangentHeadingInterpolation();
 
         /***OKAY OKAY NOW GET OUT OF THERE AND START GETTING READY TO PUSH!!***/
-        prepare1 = new Path(new BezierLine(new Point(18.000, 125.000, Point.CARTESIAN),
-                new Point(30.000, 110.000, Point.CARTESIAN)
-        )
-        )
-                .setTangentHeadingInterpolation();
+        prepare1 = new Path(new BezierLine(new Point(18.000, 125.000, Point.CARTESIAN),new Point(30.000, 110.000, Point.CARTESIAN)));
+                prepare1.setTangentHeadingInterpolation();
 
         /***GET READY TO START PUSHING WHILE TURNING AROUND!!***/
         prepare2 = new Path(new BezierLine(new Point(30.000, 110.000, Point.CARTESIAN),
                 new Point(60.000, 110.000, Point.CARTESIAN)
         )
-        )
-                .setConstantHeadingInterpolation(Math.toRadians(180));
+        );
+                prepare2.setConstantHeadingInterpolation(Math.toRadians(180));
 
         /***GET BEHIND THAT BRICK!!***/
         prepare3 = new Path(new BezierLine(new Point(60.000, 110.000, Point.CARTESIAN),
                 new Point(60.000, 122.000, Point.CARTESIAN)
         )
-        )
-                .setConstantHeadingInterpolation(Math.toRadians(180));
-        pickUpHuman.setZeroPowerAccelerationMultiplier(2.0);
+        );
+                prepare3.setConstantHeadingInterpolation(Math.toRadians(180));
 
         /***AND PUSH!!!***/
         push1 = new Path(new BezierLine(new Point(60.000, 122.000, Point.CARTESIAN),
                 new Point(5.000, 122.000, Point.CARTESIAN)
         )
-        )
-                .setTangentHeadingInterpolation();
+        );
+                push1.setTangentHeadingInterpolation();
 
         /***GET READY TO PUSH THAT 2nd BRICK!***/
-        round2 = new Point(5.000, 122.000, Point.CARTESIAN),
-                new Point(60.000, 122.000, Point.CARTESIAN)
-      )
-    )
-    .setConstantHeadingInterpolation(Math.toRadians(180));
+        round2 = new Path(new BezierLine(new Point(5.000, 122.000, Point.CARTESIAN),new Point(60.000, 122.000, Point.CARTESIAN)));
+    round2.setConstantHeadingInterpolation(Math.toRadians(180));
 
         /*** LETS GO JANKY!! GET BEHIND THAT BRICK!!  ***/
         prepare4 = new Path(new BezierLine(new Point(60.000, 122.000, Point.CARTESIAN),
                 new Point(60.000, 132.000, Point.CARTESIAN)
         )
-        )
-                .setConstantHeadingInterpolation(Math.toRadians(180));
+        );
+                prepare4.setConstantHeadingInterpolation(Math.toRadians(180));
 
         /***AND PUSH!!***/
         endPush = new Path(new BezierLine(new Point(60.000, 132.000, Point.CARTESIAN),
                 new Point(10.000, 132.000, Point.CARTESIAN)
         )
-        )
-                .setTangentHeadingInterpolation();
+        );
+                endPush.setTangentHeadingInterpolation();
     }
 
     /***Align to sub and raise arm***/
