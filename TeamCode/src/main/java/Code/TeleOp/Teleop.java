@@ -77,15 +77,9 @@ public class Teleop extends OpMode {
 
 
         //Allows the player to lift the arm by pressing either the 'x' button or the left bumper
-        if (gamepad1.left_bumper || gamepad1.x) {
-            if (gamepad1.x && !gamepad1.left_bumper) {
-                RA.setPower(0.65);
-                LA.setPower(0.65);
-            }
-            else{
-                RA.setPower(1);
-                LA.setPower(1);
-            }
+        if (gamepad1.left_bumper) {
+            RA.setPower(1);
+            LA.setPower(1);
         }
 
         //Allows the player to lower the arm by pressing the 'y' button or right bumper.

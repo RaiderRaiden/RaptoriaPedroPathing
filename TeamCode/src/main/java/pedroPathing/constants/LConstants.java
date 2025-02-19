@@ -6,10 +6,10 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
 public class LConstants {
     static {
-        TwoWheelConstants.forwardTicksToInches = 0.002988467787; //Still need to do the
-        TwoWheelConstants.strafeTicksToInches = 0.0029970542101870087;;
-        TwoWheelConstants.forwardY = 4.84252;
-        TwoWheelConstants.strafeX = 3.14961;
+        TwoWheelConstants.forwardTicksToInches = 0.002946369864;
+        TwoWheelConstants.strafeTicksToInches = 0.002950440456;;
+        TwoWheelConstants.forwardY = -1283.8877953; //3.8877953
+        TwoWheelConstants.strafeX = 1160.549213; //3.799213
         TwoWheelConstants.forwardEncoder_HardwareMapName = "ODO";
         TwoWheelConstants.strafeEncoder_HardwareMapName = "EM";
         TwoWheelConstants.forwardEncoderDirection = Encoder.REVERSE;
