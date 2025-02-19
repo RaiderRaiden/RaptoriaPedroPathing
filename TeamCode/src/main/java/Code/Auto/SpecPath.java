@@ -156,9 +156,11 @@ public class SpecPath extends LinearOpMode {
         pickUpHuman.setConstantHeadingInterpolation(Math.toRadians(180));
         pickUpHuman.setZeroPowerAccelerationMultiplier(2.0);
 
+        /***Go to sub after securing second specimen***/
         scoreHuman = new Path(new BezierLine(new Point(12.005, 15.000, Point.CARTESIAN), new Point(39.5, 70, Point.CARTESIAN)));
         scoreHuman.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0));
 
+        /***Park in observation zone***/
         park = new Path(new BezierLine(new Point(39.5, 70, Point.CARTESIAN), new Point(12.145, 15.000, Point.CARTESIAN)));
         park.setConstantHeadingInterpolation(Math.toRadians(0));
 
