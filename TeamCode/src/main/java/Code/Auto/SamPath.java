@@ -2,6 +2,7 @@ package Code.Auto;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathBuilder;
@@ -107,15 +108,7 @@ public class SamPath extends LinearOpMode {
             if (pathState <= 1) {
                 autonomousPathUpdate();
             }
-            else if (pathState <= 3){
-                autonomousPathUpdate1();
-            }
-            else  if (pathState <= 7){
-                autonomousPathUpdate2();
-            }
-            else {
-                autonmousPathUpdate3();
-            }
+
 
             // Feedback to Driver Hub
             telemetry.addData("path state", pathState);
@@ -136,59 +129,63 @@ public class SamPath extends LinearOpMode {
     public void buildpath() {
 
         /***GET READY TO RUMBLE!!***/
-        start1 = new Path(new BezierLine(new Point(8.000, 100.000, Point.CARTESIAN), new Point(20.000, 123.000, Point.CARTESIAN)));
-        start1.setTangentHeadingInterpolation();
+        start1 = new Path(new BezierLine(
+                new Point(8.285, 108.539, Point.CARTESIAN),
+                new Point(19.222, 124.944, Point.CARTESIAN)
+        )
+        );
+        start1.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(135));
 
 
         /***SCORE THAT SAMPLE IN THAT LOW BUCKET LETS GOO LETS FUCKING GO!!***/
-        scoreSAM = new Path(new BezierLine(new Point(20.000, 123.000, Point.CARTESIAN), new Point(18.000, 125.000, Point.CARTESIAN)));
+        scoreSAM = new Path(new BezierLine(
+                new Point(19.222, 124.944, Point.CARTESIAN),
+                new Point(16.239, 127.761, Point.CARTESIAN)
+        )
+        );
         scoreSAM.setTangentHeadingInterpolation();
 
         /***OKAY OKAY NOW GET OUT OF THERE AND START GETTING READY TO PUSH!!***/
-        prepare1 = new Path(new BezierLine(new Point(18.000, 125.000, Point.CARTESIAN),new Point(30.000, 110.000, Point.CARTESIAN)));
-                prepare1.setTangentHeadingInterpolation();
-
-        /***GET READY TO START PUSHING WHILE TURNING AROUND!!***/
-        prepare2 = new Path(new BezierLine(new Point(30.000, 110.000, Point.CARTESIAN),
-                new Point(60.000, 110.000, Point.CARTESIAN)
+        prepare1 = new Path(new BezierCurve(
+                new Point(16.239, 127.761, Point.CARTESIAN),
+                new Point(27.507, 84.677, Point.CARTESIAN),
+                new Point(68.272, 120.635, Point.CARTESIAN)
         )
-        );
-                prepare2.setConstantHeadingInterpolation(Math.toRadians(180));
+    );
+    prepare1.setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180));
 
-        /***GET BEHIND THAT BRICK!!***/
-        prepare3 = new Path(new BezierLine(new Point(60.000, 110.000, Point.CARTESIAN),
-                new Point(60.000, 122.000, Point.CARTESIAN)
-        )
-        );
-                prepare3.setConstantHeadingInterpolation(Math.toRadians(180));
 
         /***AND PUSH!!!***/
-        push1 = new Path(new BezierLine(new Point(60.000, 122.000, Point.CARTESIAN),
-                new Point(5.000, 122.000, Point.CARTESIAN)
+        push1 = new Path(new BezierCurve(
+                new Point(68.272, 120.635, Point.CARTESIAN),
+                new Point(34.467, 118.812, Point.CARTESIAN),
+                new Point(11.600, 126.269, Point.CARTESIAN)
         )
         );
-                push1.setTangentHeadingInterpolation();
+                push1.setConstantHeadingInterpolation(Math.toRadians(180));
 
         /***GET READY TO PUSH THAT 2nd BRICK!***/
-        round2 = new Path(new BezierLine(new Point(5.000, 122.000, Point.CARTESIAN),new Point(60.000, 122.000, Point.CARTESIAN)));
-    round2.setConstantHeadingInterpolation(Math.toRadians(180));
-
-        /*** LETS GO JANKY!! GET BEHIND THAT BRICK!!  ***/
-        prepare4 = new Path(new BezierLine(new Point(60.000, 122.000, Point.CARTESIAN),
-                new Point(60.000, 132.000, Point.CARTESIAN)
+        round2 = new Path(new BezierCurve(
+                new Point(11.600, 126.269, Point.CARTESIAN),
+                new Point(56.341, 109.699, Point.CARTESIAN),
+                new Point(68.603, 130.909, Point.CARTESIAN)
         )
         );
-                prepare4.setConstantHeadingInterpolation(Math.toRadians(180));
+                round2.setConstantHeadingInterpolation(Math.toRadians(180));
+
 
         /***AND PUSH!!***/
-        endPush = new Path(new BezierLine(new Point(60.000, 132.000, Point.CARTESIAN),
-                new Point(10.000, 132.000, Point.CARTESIAN)
+        endPush = new Path(new BezierLine(
+                new Point(68.603, 130.909, Point.CARTESIAN),
+                new Point(15.908, 132.732, Point.CARTESIAN)
         )
-        );
-                endPush.setTangentHeadingInterpolation();
+    );
+    endPush.setConstantHeadingInterpolation(Math.toRadians(180));
     }
 
-    /***Align to sub and raise arm***/
+
+
+    /***Go time***/
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
@@ -197,140 +194,35 @@ public class SamPath extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                //raise arm
-                if (!follower.isBusy()) {
-                    dArm(-550, 0.9);
-                    setPathState(2);
-                }
-
-            /*case 2:
-
-                //Approach sub.
-                if (!RA.isBusy() && !LA.isBusy()) {
-                    follower.followPath(scorePreLoad, true);
-                    setPathState(3);
-                }
+                follower.followPath(scoreSAM,true);
+                setPathState(2);
                 break;
-
-            case 3:
-
-                if (!follower.isBusy()) {
-                    dArm(145, 0.9);
-                    setPathState(-1);
-                } */
-        }
-    }
-
-    /***Drive to sub and score preLoad***/
-    public void autonomousPathUpdate1() {
-        switch (pathState) {
-            case 0:
-
-            case 1:
-
             case 2:
-
-                //Approach sub.
-                if (!follower.isBusy()) {
-                    follower.followPath(scorePreLoad, false);
-                    setPathState(3);
-                }
+                follower.followPath(prepare1,true);
+                setPathState(3);
                 break;
-
             case 3:
-
-                if (!follower.isBusy()) {
-                    dArm(170, 1);
-                    claw(1, 150, 0);
-                    setPathState(4);
-                }
-        }
-    }
-
-    /***Goes to pick up second specimen***/
-    public void autonomousPathUpdate2() {
-        switch (pathState) {
-
+                follower.followPath(push1,true);
+                setPathState(4);
+                break;
             case 4:
-
-                if (!follower.isBusy()) {
-                    follower.followPath(backup1);
-                    setPathState(5);
-                }
+                follower.followPath(round2,true);
+                setPathState(5);
                 break;
             case 5:
-                if (!follower.isBusy()) {
-                    dArm(170, 0.9);
-                    follower.followPath(goToSub);
-                    setPathState(6);
-                }
+                follower.followPath(endPush,true);
+                setPathState(6);
                 break;
-            case 6:
-                if (!follower.isBusy()) {
-                    follower.followPath(pickUpHuman);
-                    setPathState(7);
-                }
-                break;
-            case 7:
-                if (!follower.isBusy()) {
-                    sleep(200);
-                    claw(-1, 150, -0.5);
-                    dArm(-340, 0.9);
-                    follower.followPath(scoreHuman, true);
-                    setPathState(8);
-                }
-                break;
-        }
-
-    }
-    public void autonmousPathUpdate3() {
-        switch (pathState) {
-            case 0:
-
-            case 8:
-                if (!follower.isBusy()) {
-                    dArm(190, 0.9);
-                    claw(1, 100, 0);
-                    follower.followPath(park, true);
-                    setPathState(-1);
                 }
         }
-    }
-
-    /***Change which path your following***/
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
     }
 
-    /***Allows us to move our arm***/
-    public void dArm(int tar, double speed) {
 
-        //Reset encoder
-        LA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    /***Change which path your following***/
 
-        //Set the amount we want our arm to move
-        LA.setTargetPosition(tar);
-        RA.setTargetPosition(tar);
-
-        //Tell the encoder to move to the goal position
-        RA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        //sets the speed of the motors
-        LA.setPower(speed);
-        RA.setPower(speed);
-
-        //Prevent further progression of path while arm is moving
-        while(LA.isBusy() && RA.isBusy() && opModeIsActive()){
-            idle();
-        }
-
-        //Used as insurance to prevent the arm stalling
-
-
-    }
 
     /***Allows the claw to be controlled***/
     private void claw(double speed, int time, double eSpeed) {
