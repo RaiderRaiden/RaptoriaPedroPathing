@@ -41,10 +41,10 @@ public class SamPath extends LinearOpMode {
     private int pathState;
 
     //Declare Starting Position
-    private final Pose startPose = new Pose(8, 100, Math.toRadians(0));
+    private final Pose startPose = new Pose(8, 110, Math.toRadians(0));
 
     //First Path
-    private Path start1, scoreSAM, prepare1, prepare2, prepare3, prepare4,push1,round2,endPush;
+    private Path start1, scoreSAM, prepare1,push1,round2,endPush;
     private Path scorePreLoad;
 
     //Second path
@@ -105,9 +105,8 @@ public class SamPath extends LinearOpMode {
             follower.update();
 
             /***Tells which set of paths to follow***/
-            if (pathState <= 1) {
-                autonomousPathUpdate();
-            }
+            autonomousPathUpdate();
+
 
 
             // Feedback to Driver Hub
@@ -148,10 +147,10 @@ public class SamPath extends LinearOpMode {
         /***OKAY OKAY NOW GET OUT OF THERE AND START GETTING READY TO PUSH!!***/
         prepare1 = new Path(new BezierCurve(
                 new Point(16.239, 127.761, Point.CARTESIAN),
-                new Point(27.507, 84.677, Point.CARTESIAN),
-                new Point(68.272, 120.635, Point.CARTESIAN)
+                new Point(29.662, 90.311, Point.CARTESIAN),
+                new Point(70.591, 120.470, Point.CARTESIAN)
         )
-    );
+        );
     prepare1.setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180));
 
 
@@ -190,27 +189,30 @@ public class SamPath extends LinearOpMode {
         switch (pathState) {
             case 0:
                 //Line to sub
-                follower.followPath(start1, true);
+                follower.followPath(start1);
                 setPathState(1);
                 break;
+
             case 1:
-                follower.followPath(scoreSAM,true);
+                follower.followPath(scoreSAM);
                 setPathState(2);
                 break;
+
             case 2:
-                follower.followPath(prepare1,true);
+                claw(1,100,0);
+                follower.followPath(prepare1);
                 setPathState(3);
                 break;
             case 3:
-                follower.followPath(push1,true);
+                follower.followPath(push1);
                 setPathState(4);
                 break;
             case 4:
-                follower.followPath(round2,true);
+                follower.followPath(round2);
                 setPathState(5);
                 break;
             case 5:
-                follower.followPath(endPush,true);
+                follower.followPath(endPush);
                 setPathState(6);
                 break;
                 }
@@ -219,9 +221,34 @@ public class SamPath extends LinearOpMode {
         pathState = pState;
         pathTimer.resetTimer();
     }
+    public void dArm(int tar, double speed, boolean wait) {
+
+        //Reset encoder
+        LA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //Set the amount we want our arm to move
+        LA.setTargetPosition(tar);
+        RA.setTargetPosition(tar);
+
+        //Tell the encoder to move to the goal position
+        RA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //sets the speed of the motors
+        LA.setPower(speed);
+        RA.setPower(speed);
+
+        //Prevent further progression of path while arm is moving
+        while(LA.isBusy() && RA.isBusy() && opModeIsActive() && wait){
+            idle();
+        }
+
+        //Used as insurance to prevent the arm stalling
 
 
-    /***Change which path your following***/
+    }
+
 
 
     /***Allows the claw to be controlled***/
