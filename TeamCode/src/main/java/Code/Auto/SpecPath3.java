@@ -89,7 +89,7 @@ public class SpecPath3 extends LinearOpMode {
 
         /***Grab block, can be used to know init is done***/
         claw(-1, 50, -0.5);
-        dArm(-75, 1, true);
+        dArm(-65, 1, true);
 
         waitForStart();
 
@@ -104,26 +104,13 @@ public class SpecPath3 extends LinearOpMode {
             //Update location
             follower.update();
             autonomousPathUpdate();
-            /***Tells which set of paths to follow***/
-            /*if (pathState <= 3) {
-                autonomousPathUpdate();
-            }
-            else if (pathState <= 3){
-                autonomousPathUpdate1();
-            }
-             else  if (pathState <= 7){
-                autonomousPathUpdate2();
-            }
-            else {
-                autonmousPathUpdate3();
-            } */
 
             // Feedback to Driver Hub
             telemetry.addData("path state", pathState);
             telemetry.addData("x", follower.getPose().getX());
             telemetry.addData("y", follower.getPose().getY());
             telemetry.addData("heading", follower.getPose().getHeading());
-            telemetry.addData("Armpos: ", LA.getCurrentPosition());
+            telemetry.addData("ArmPos: ", LA.getCurrentPosition());
             telemetry.update();
 
         }
@@ -156,22 +143,24 @@ public class SpecPath3 extends LinearOpMode {
         /***Take him to the dungeon***/
         scoreHuman1 = new Path(new BezierLine(new Point(10.950, 24.000, Point.CARTESIAN), new Point(40.000, 72.000, Point.CARTESIAN)));
         scoreHuman1.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0));
+        scoreHuman1.setZeroPowerAccelerationMultiplier(3.5);
 
         /***There's another!***/
-        goToSub = new Path(new BezierLine(new Point(39.500, 72.000, Point.CARTESIAN), new Point(23, 15.000, Point.CARTESIAN)));
+        goToSub = new Path(new BezierLine(new Point(40.000, 72.000, Point.CARTESIAN), new Point(23, 15.000, Point.CARTESIAN)));
         goToSub.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180));
 
         /***Get'em***/
-        grabHuman2 = new Path(new BezierLine(new Point(23.000, 15.000, Point.CARTESIAN), new Point(10.95, 15.000, Point.CARTESIAN)));
+        grabHuman2 = new Path(new BezierLine(new Point(23.000, 15.000, Point.CARTESIAN), new Point(11.345, 15.000, Point.CARTESIAN)));
         grabHuman2.setConstantHeadingInterpolation(Math.toRadians(180));
 
         /***To the chopping block, my patience is gone***/
-        scoreHuman2 = new Path(new BezierLine(new Point(10.95, 15.000, Point.CARTESIAN), new Point(40.000, 68.000, Point.CARTESIAN)));
+        scoreHuman2 = new Path(new BezierLine(new Point(11.345, 15.000, Point.CARTESIAN), new Point(40.00, 68.000, Point.CARTESIAN)));
         scoreHuman2.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0));
 
         /***Time to take a break***/
-        park = new Path(new BezierLine(new Point(39.500, 68.000, Point.CARTESIAN), new Point(13.000, 15.000, Point.CARTESIAN)));
+        park = new Path(new BezierLine(new Point(40.000, 68.000, Point.CARTESIAN), new Point(13.000, 15.000, Point.CARTESIAN)));
         park.setConstantHeadingInterpolation(Math.toRadians(0));
+        park.setZeroPowerAccelerationMultiplier(5);
 
 
 
@@ -192,7 +181,7 @@ public class SpecPath3 extends LinearOpMode {
                 if (!follower.isBusy()) {
                     dArm(170, 1, true);
                     claw(1, 100, 0);
-                    follower.followPath(secureSpike, false);
+                    follower.followPath(secureSpike);
                     setPathState(2);
                 }
 
@@ -212,7 +201,7 @@ public class SpecPath3 extends LinearOpMode {
                 if (!follower.isBusy()) {
                     claw(-1, 150, -0.5);
                     sleep(50);
-                    dArm(-100, 1, true);
+                    dArm(-75, 1, true);
                     dArm(-240, 1, false);
                     sleep(100);
                     follower.followPath(scoreHuman1);
@@ -223,6 +212,7 @@ public class SpecPath3 extends LinearOpMode {
                 if (!follower.isBusy()) {
                     dArm(170, 1, true);
                     claw(1, 150, 0);
+                    dArm(-10, 1, true);
                     setPathState(5);
                 }
                 break;
@@ -236,7 +226,7 @@ public class SpecPath3 extends LinearOpMode {
             case 6:
                 //Approach the player and get last spec
                 if (!follower.isBusy()) {
-                    dArm(170, 1, true);
+                    dArm(167, 1, true);
                     follower.followPath(grabHuman2);
                     setPathState(7);
                 }
@@ -244,7 +234,7 @@ public class SpecPath3 extends LinearOpMode {
             case 7:
                 //Get the spec and go to chamber
                 if (!follower.isBusy()) {
-                    claw(-1, 150, -0.5);
+                    claw(-1, 150, -0.55);
                     sleep(100);
                     dArm(-50, 1, true);
                     dArm(-290, 1, false);
@@ -255,7 +245,7 @@ public class SpecPath3 extends LinearOpMode {
             case 8:
                 //Go park
                 if (!follower.isBusy()) {
-                    dArm(180, 1, true);
+                    dArm(185, 1, true);
                     claw(1, 100, 0);
                     follower.followPath(park, true);
                     setPathState(-1);

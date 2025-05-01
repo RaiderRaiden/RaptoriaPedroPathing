@@ -2,6 +2,7 @@ package Code.Auto;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathBuilder;
@@ -31,8 +32,8 @@ import pedroPathing.constants.LConstants;
  ***
  ***/
 
-@Autonomous(name = "SpecPathOp")
-public class SpecPathOp extends LinearOpMode {
+@Autonomous(name = "SpecPathCopy")
+public class SpecPathCopy extends LinearOpMode {
 
     //Built in from Source.
     private Follower follower;
@@ -45,11 +46,8 @@ public class SpecPathOp extends LinearOpMode {
     private final Pose startPose = new Pose(7.625, 64.625, Math.toRadians(0));
 
     //First Path
-    private Path forward1;
-    private Path scorePreLoad;
+    private Path scorePreLoad, secureSpike, stabHuman, scoreHuman1, goToSub, grabHuman2, scoreHuman2, park;
 
-    //Second path
-    private Path backup1, goToSub, pickUpHuman, scoreHuman, park;
 
 
     private DcMotor LA;
@@ -91,6 +89,7 @@ public class SpecPathOp extends LinearOpMode {
 
         /***Grab block, can be used to know init is done***/
         claw(-1, 50, -0.5);
+        dArm(-65, 1, true);
 
         waitForStart();
 
@@ -105,26 +104,13 @@ public class SpecPathOp extends LinearOpMode {
             //Update location
             follower.update();
             autonomousPathUpdate();
-            /***Tells which set of paths to follow***/
-            /*if (pathState <= 3) {
-                autonomousPathUpdate();
-            }
-            else if (pathState <= 3){
-                autonomousPathUpdate1();
-            }
-             else  if (pathState <= 7){
-                autonomousPathUpdate2();
-            }
-            else {
-                autonmousPathUpdate3();
-            } */
 
             // Feedback to Driver Hub
             telemetry.addData("path state", pathState);
             telemetry.addData("x", follower.getPose().getX());
             telemetry.addData("y", follower.getPose().getY());
             telemetry.addData("heading", follower.getPose().getHeading());
-            telemetry.addData("Armpos: ", LA.getCurrentPosition());
+            telemetry.addData("ArmPos: ", LA.getCurrentPosition());
             telemetry.update();
 
         }
@@ -137,32 +123,46 @@ public class SpecPathOp extends LinearOpMode {
     /***Build all paths used***/
     public void buildpath() {
 
-        /***Align to sub***/
-        forward1 = new Path(new BezierLine(new Point(startPose), new Point(24.275, 72.589, Point.CARTESIAN)));
-        forward1.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0));
+        /***Score the Preload ***/
+        scorePreLoad = new Path(new BezierLine(new Point(startPose), new Point(40.000, 77.000, Point.CARTESIAN)));
+        scorePreLoad.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0));
+        scorePreLoad.setZeroPowerAccelerationMultiplier(0.24);
 
-        /***Goes to submersible and score preLoad***/
-        scorePreLoad = new Path(new BezierLine(new Point(23.975, 72.589, Point.CARTESIAN), new Point(39.500, 72.589, Point.CARTESIAN)));
-        scorePreLoad.setConstantHeadingInterpolation(Math.toRadians(0));
 
-        /***Back away from the sub!***/
-        backup1 = new Path(new BezierLine(new Point(39.500, 72.589, Point.CARTESIAN),new Point(24.275, 72.000, Point.CARTESIAN)));
-        backup1.setConstantHeadingInterpolation(Math.toRadians(0));
+        /***We need a weapon!***/
+        secureSpike = new Path(new BezierCurve(new Point(40.000, 77.00, Point.CARTESIAN),new Point(0.943, 41.008 , Point.CARTESIAN), new Point(65.000, 32.759, Point.CARTESIAN)));
+        secureSpike.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180));
+        secureSpike.setReversed(true);
 
-        /***Goes to Observation Zone while turning around***/
-        goToSub = new Path(new BezierLine(new Point(24.275, 72.000, Point.CARTESIAN), new Point(24.275, 15.000, Point.CARTESIAN)));
+
+        /***Time to kill***/
+        stabHuman = new Path(new BezierCurve(new Point(65.000, 32.759, Point.CARTESIAN), new Point(66.226, 18.854, Point.CARTESIAN), new Point(10.95, 24.000, Point.CARTESIAN)));
+        stabHuman.setConstantHeadingInterpolation(Math.toRadians(180));
+        stabHuman.setZeroPowerAccelerationMultiplier(2.5);
+
+        /***Take him to the dungeon***/
+        scoreHuman1 = new Path(new BezierLine(new Point(10.950, 24.000, Point.CARTESIAN), new Point(40.000, 72.000, Point.CARTESIAN)));
+        scoreHuman1.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0));
+        scoreHuman1.setZeroPowerAccelerationMultiplier(3.5);
+
+        /***There's another!***/
+        goToSub = new Path(new BezierLine(new Point(40.000, 72.000, Point.CARTESIAN), new Point(23, 15.000, Point.CARTESIAN)));
         goToSub.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180));
 
-        /***Drive to wall, to pick up specimen***/
-        pickUpHuman = new Path(new BezierLine(new Point(24.275, 15.000, Point.CARTESIAN), new Point(12.015, 15.000, Point.CARTESIAN)));
-        pickUpHuman.setConstantHeadingInterpolation(Math.toRadians(180));
-        pickUpHuman.setZeroPowerAccelerationMultiplier(2.0);
+        /***Get'em***/
+        grabHuman2 = new Path(new BezierLine(new Point(23.000, 15.000, Point.CARTESIAN), new Point(11.345, 15.000, Point.CARTESIAN)));
+        grabHuman2.setConstantHeadingInterpolation(Math.toRadians(180));
 
-        scoreHuman = new Path(new BezierLine(new Point(12.015, 15.000, Point.CARTESIAN), new Point(39.5, 70, Point.CARTESIAN)));
-        scoreHuman.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0));
+        /***To the chopping block, my patience is gone***/
+        scoreHuman2 = new Path(new BezierLine(new Point(11.345, 15.000, Point.CARTESIAN), new Point(40.00, 68.000, Point.CARTESIAN)));
+        scoreHuman2.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0));
 
-        park = new Path(new BezierLine(new Point(39.5, 70, Point.CARTESIAN), new Point(12.145, 15.000, Point.CARTESIAN)));
+        /***Time to take a break***/
+        park = new Path(new BezierLine(new Point(40.000, 68.000, Point.CARTESIAN), new Point(13.000, 15.000, Point.CARTESIAN)));
         park.setConstantHeadingInterpolation(Math.toRadians(0));
+        park.setZeroPowerAccelerationMultiplier(5);
+
+
 
 
     }
@@ -171,64 +171,81 @@ public class SpecPathOp extends LinearOpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                //Line to sub
-                follower.followPath(forward1, true);
+                //Go score preLoad
+                dArm(-475, 1, false);
+                follower.followPath(scorePreLoad, true);
                 setPathState(1);
                 break;
             case 1:
-                //raise arm
+                //Clip spec, and go get spike
                 if (!follower.isBusy()) {
-                    dArm(-550, 1, true);
+                    dArm(170, 1, true);
+                    claw(1, 100, 0);
+                    follower.followPath(secureSpike);
                     setPathState(2);
                 }
 
             case 2:
 
-                //Approach sub.
+                //Weaponize the Jank. (bring spike to observation zone)
                 if (!follower.isBusy()) {
-                    follower.followPath(scorePreLoad, true);
+                    dArm(165, 1, false);
+                    follower.followPath(stabHuman, true);
                     setPathState(3);
                 }
                 break;
 
             case 3:
 
+                //Get first human spec and go score it
                 if (!follower.isBusy()) {
-                    dArm(170, 1, true);
-                    claw(1, 150, 0);
+                    claw(-1, 150, -0.5);
+                    sleep(50);
+                    dArm(-75, 1, true);
+                    dArm(-240, 1, false);
+                    sleep(100);
+                    follower.followPath(scoreHuman1);
                     setPathState(4);
                 }
             case 4:
+                //Score the spec and open claw
                 if (!follower.isBusy()) {
-                    follower.followPath(backup1);
+                    dArm(170, 1, true);
+                    claw(1, 150, 0);
+                    dArm(-10, 1, true);
                     setPathState(5);
                 }
                 break;
             case 5:
+                //Go to the sub to pick the next spec up, while lowering arm
                 if (!follower.isBusy()) {
-                    dArm(170, 1, false);
-                    follower.followPath(goToSub);
+                    follower.followPath(goToSub, true);
                     setPathState(6);
                 }
                 break;
             case 6:
+                //Approach the player and get last spec
                 if (!follower.isBusy()) {
-                    follower.followPath(pickUpHuman);
+                    dArm(167, 1, true);
+                    follower.followPath(grabHuman2);
                     setPathState(7);
                 }
                 break;
             case 7:
+                //Get the spec and go to chamber
                 if (!follower.isBusy()) {
-                    claw(-1, 150, -0.5);
+                    claw(-1, 150, -0.55);
                     sleep(100);
-                    dArm(-340, 1, false);
-                    follower.followPath(scoreHuman, true);
+                    dArm(-50, 1, true);
+                    dArm(-290, 1, false);
+                    follower.followPath(scoreHuman2, true);
                     setPathState(8);
                 }
                 break;
             case 8:
+                //Go park
                 if (!follower.isBusy()) {
-                    dArm(190, 1, true);
+                    dArm(185, 1, true);
                     claw(1, 100, 0);
                     follower.followPath(park, true);
                     setPathState(-1);
@@ -247,26 +264,20 @@ public class SpecPathOp extends LinearOpMode {
 
         //Reset encoder
         LA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //Set the amount we want our arm to move
-        LA.setTargetPosition(tar);
-        RA.setTargetPosition(tar);
 
         //Tell the encoder to move to the goal position
-        RA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (LA.getCurrentPosition() < tar-5 && LA.getCurrentPosition() > tar+5) {
+            LA.setPower(speed);
+            RA.setPower(speed);
+        }
 
-        //sets the speed of the motors
-        LA.setPower(speed);
-        RA.setPower(speed);
+        LA.setPower(0);
+        RA.setPower(0);
 
         //Prevent further progression of path while arm is moving
         while(LA.isBusy() && RA.isBusy() && opModeIsActive() && wait){
             idle();
         }
-
-        //Used as insurance to prevent the arm stalling
 
 
     }
