@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
+import com.qualcomm.robotcore.hardware.Servo;
 
 
 @TeleOp(name = "uMakeTheName")
@@ -22,6 +22,7 @@ public class Teleop extends OpMode {
     DcMotor RA;
     CRServo CS1;
     CRServo CS2;
+    Servo Wrist;
     boolean fine = false;
     boolean isFreed = false;
 
@@ -36,8 +37,9 @@ public class Teleop extends OpMode {
         EM = hardwareMap.dcMotor.get("EM");
         LA = hardwareMap.dcMotor.get("LA");
         RA = hardwareMap.dcMotor.get("RA");
-        CS1 = hardwareMap.crservo.get("CS1");
-        CS2 = hardwareMap.crservo.get("CS2");
+        CS1 = hardwareMap.crservo.get("LCR");
+        CS2 = hardwareMap.crservo.get("RCR");
+        Wrist = hardwareMap.servo.get("W");
 
 
         //set the Power to brake
@@ -115,19 +117,22 @@ public class Teleop extends OpMode {
         CS2.setPower((gamepad1.right_trigger-gamepad1.left_trigger));
 
 
-        if ((gamepad1.dpad_down || gamepad1.x) && !fine) {
-            fine = true;
+        if (gamepad1.dpad_down) {
+            Wrist.setPosition(0.25);
         }
-        if ((gamepad1.dpad_down || gamepad1.x) && fine)
-            fine = false;
+        if (gamepad1.dpad_left) {
+            Wrist.setPosition(0.5);
+        }
+        if(gamepad1.dpad_up) {
+            Wrist.setPosition(1);
+        }
 
-        if (fine) {
-            LA.setPower(-0.3);
-            RA.setPower(-0.3);
-        }
+
 
 
         telemetry.addData("fine: ", fine);
+        telemetry.addData("x: ", gamepad1.x);
+        telemetry.addData("dpad_down: ", gamepad1.dpad_down);
     }
 
 }
