@@ -189,33 +189,44 @@ public class SamPath extends LinearOpMode {
         switch (pathState) {
             case 0:
                 //Line to sub
-                follower.followPath(start1);
+                follower.followPath(start1, true);
                 setPathState(1);
                 break;
 
             case 1:
-                follower.followPath(scoreSAM);
-                setPathState(2);
-                break;
+                if (!follower.isBusy()) {
+                    follower.followPath(scoreSAM, true);
+                    setPathState(2);
+                    break;
+                }
 
             case 2:
-                claw(1,100,0);
-                follower.followPath(prepare1);
-                setPathState(3);
-                break;
-            case 3:
-                follower.followPath(push1);
-                setPathState(4);
-                break;
-            case 4:
-                follower.followPath(round2);
-                setPathState(5);
-                break;
-            case 5:
-                follower.followPath(endPush);
-                setPathState(6);
-                break;
+                if (!follower.isBusy()) {
+                    claw(1, 100, 0);
+                    follower.followPath(prepare1, true);
+                    dArm(-100, 1, true);
+                    setPathState(3);
+                    break;
                 }
+            case 3:
+                if (!follower.isBusy()) {
+                    follower.followPath(push1, true);
+                    setPathState(4);
+                    break;
+                }
+            case 4:
+                if (!follower.isBusy()) {
+                    follower.followPath(round2, true);
+                    setPathState(5);
+                    break;
+                }
+            case 5:
+                if (!follower.isBusy()) {
+                    follower.followPath(endPush, true);
+                    setPathState(6);
+                    break;
+                }
+        }
         }
     public void setPathState(int pState) {
         pathState = pState;
@@ -246,6 +257,10 @@ public class SamPath extends LinearOpMode {
 
         //Used as insurance to prevent the arm stalling
 
+        //Attempt to stop instant progression through every path
+        while(LA.isBusy() && RA.isBusy() && opModeIsActive() && wait){
+            idle();
+        }
 
     }
 
