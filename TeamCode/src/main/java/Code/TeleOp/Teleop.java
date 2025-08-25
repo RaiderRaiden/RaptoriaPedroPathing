@@ -39,8 +39,6 @@ public class Teleop extends OpMode {
         RA = hardwareMap.dcMotor.get("RA");
         CS1 = hardwareMap.crservo.get("LCR");
         CS2 = hardwareMap.crservo.get("RCR");
-        Wrist = hardwareMap.servo.get("W");
-
 
         //set the Power to brake
         FR.setZeroPowerBehavior(BRAKE);
